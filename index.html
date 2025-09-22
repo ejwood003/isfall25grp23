@@ -1,11 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>Final GPA Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
+    label { display: block; margin-top: 12px; }
+    input { width: 100%; padding: 6px; }
+    button { margin-top: 20px; padding: 10px 16px; font-size: 1rem; }
+    .result { margin-top: 20px; font-weight: bold; font-size: 1.2rem; }
+  </style>
 </head>
 <body>
-    
+  <h1>Student Final GPA Calculator</h1>
+  <form id="gradeForm">
+    <label>Student Name:
+      <input type="text" id="name" required>
+    </label>
+    <label>Test 1 (25%):
+      <input type="number" id="test1" min="0" max="100" required>
+    </label>
+    <label>Test 2 (30%):
+      <input type="number" id="test2" min="0" max="100" required>
+    </label>
+    <label>Project 1 (1%):
+      <input type="number" id="proj1" min="0" max="100" required>
+    </label>
+    <label>Project 2 (4%):
+      <input type="number" id="proj2" min="0" max="100" required>
+    </label>
+    <label>Project 3 (15%):
+      <input type="number" id="proj3" min="0" max="100" required>
+    </label>
+    <label>Assignment Score (25%):
+      <input type="number" id="assign" min="0" max="100" required>
+    </label>
+    <button type="button" onclick="calculateGrade()">Calculate Final GPA</button>
+  </form>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    function calculateGrade() {
+      // Collect scores
+      const name = document.getElementById('name').value.trim();
+      const t1 = parseFloat(document.getElementById('test1').value) || 0;
+      const t2 = parseFloat(document.getElementById('test2').value) || 0;
+      const p1 = parseFloat(document.getElementById('proj1').value) || 0;
+      const p2 = parseFloat(document.getElementById('proj2').value) || 0;
+      const p3 = parseFloat(document.getElementById('proj3').value) || 0;
+      const asg = parseFloat(document.getElementById('assign').value) || 0;
+
+      // Weights
+      const finalScore = (
+          t1 * 0.25 +
+          t2 * 0.30 +
+          p1 * 0.01 +
+          p2 * 0.04 +
+          p3 * 0.15 +
+          asg * 0.25
+      );
+
+      const rounded = Math.round(finalScore * 10) / 10; // round to 1 decimal
+
+      const letter = getLetterGrade(rounded);
+
+      document.getElementById('result').textContent =
+        `${name ? name + "'s" : "Final"} final grade: ${rounded}% → ${letter}`;
+    }
+
+    function getLetterGrade(score) {
+      if (score >= 94) return "A";
+      if (score >= 90) return "A-";
+      if (score >= 87) return "B+";
+      if (score >= 83) return "B";
+      if (score >= 80) return "B-";
+      if (score >= 77) return "C+";
+      if (score >= 73) return "C";
+      if (score >= 70) return "C-";
+      if (score >= 67) return "D+";
+      if (score >= 63) return "D";
+      if (score >= 60) return "D-";
+      return "F";
+    }
+  </script>
 </body>
 </html>
