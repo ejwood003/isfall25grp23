@@ -1,51 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Final GPA Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
-    label { display: block; margin-top: 12px; }
-    input { width: 100%; padding: 6px; }
-    button { margin-top: 20px; padding: 10px 16px; font-size: 1rem; }
-    .result { margin-top: 20px; font-weight: bold; font-size: 1.2rem; }
+    :root{
+      --primary-pink:#ff006e;
+      --primary-cyan:#00f5ff;
+      --primary-purple:#8338ec;
+      --primary-orange:#ffa500;
+      --text: rgba(255,255,255,0.92);
+      --text-dim: rgba(255,255,255,0.7);
+      --grid1: rgba(255,0,110,0.08);
+      --grid2: rgba(0,245,255,0.04);
+    }
+
+    *{ box-sizing:border-box; }
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family:'Orbitron', monospace;
+      color:var(--text);
+      background: linear-gradient(135deg,#0a0014,#1a0033,#0d1b2a,#1b263b,#2a1454,#1e0a3e,#0f0820);
+      background-size:400% 400%;
+      animation: bgShift 25s ease infinite;
+      overflow-x:hidden;
+    }
+    @keyframes bgShift{
+      0%{background-position:0% 50%}
+      33%{background-position:100% 0%}
+      66%{background-position:0% 100%}
+      100%{background-position:0% 50%}
+    }
+
+    /* Subtle neon grid overlay */
+    .grid::before{
+      content:'';
+      position:fixed; inset:0;
+      background-image:
+        linear-gradient(var(--grid1) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid1) 1px, transparent 1px),
+        linear-gradient(var(--grid2) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid2) 1px, transparent 1px);
+      background-size:80px 80px, 80px 80px, 20px 20px, 20px 20px;
+      pointer-events:none;
+      animation:gridPulse 14s ease-in-out infinite;
+    }
+    @keyframes gridPulse{
+      0%,100%{opacity:0.28}
+      50%{opacity:0.55}
+    }
+
+    header{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background: rgba(0,0,0,0.6);
+      border-bottom:1px solid rgba(255,0,110,0.35);
+      padding:14px 18px;
+    }
+    .title{
+      font-family:'Syncopate', sans-serif;
+      font-size:clamp(1.2rem, 2.5vw, 1.6rem);
+      letter-spacing:0.12em;
+      color:var(--primary-pink);
+      text-transform:uppercase;
+      text-shadow:0 0 10px var(--primary-pink), 0 0 20px var(--primary-pink);
+      margin:0;
+    }
+
+    main{
+      min-height:calc(100vh - 64px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:40px 16px;
+    }
+
+    .card{
+      width:min(760px, 94vw);
+      background: rgba(0,0,0,0.55);
+      border:1px solid rgba(0,245,255,0.35);
+      box-shadow: 0 0 20px rgba(0,245,255,0.25), inset 0 0 20px rgba(0,245,255,0.08);
+      border-radius:18px;
+      padding:28px 22px;
+    }
+
+    .card h1{
+      margin:0 0 12px 0;
+      font-size: clamp(1.1rem, 3vw, 1.6rem);
+      color:var(--primary-cyan);
+      text-shadow:0 0 8px var(--primary-cyan);
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+    }
+
+    form{
+      display:grid;
+      gap:14px;
+      grid-template-columns: 1fr 180px;
+      align-items:center;
+    }
+
+    /* Make name full width */
+    .row-full{ grid-column: 1 / -1; }
+
+    label{
+      color:var(--text-dim);
+      font-size:0.95rem;
+      letter-spacing:0.03em;
+    }
+
+    input[type="text"],
+    input[type="number"]{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:2px solid rgba(0,245,255,0.35);
+      background: rgba(0,0,0,0.45);
+      color:var(--text);
+      outline:none;
+      transition: border-color .2s ease, box-shadow .2s ease, transform .08s ease;
+      font-family:'Orbitron', monospace;
+    }
+    input[type="text"]::placeholder,
+    input[type="number"]::placeholder{ color: rgba(255,255,255,0.45); }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus{
+      border-color: var(--primary-pink);
+      box-shadow: 0 0 12px rgba(255,0,110,0.35);
+      transform: translateY(-1px);
+    }
+
+    .actions{
+      grid-column: 1 / -1;
+      display:flex;
+      gap:10px;
+      margin-top:6px;
+      flex-wrap:wrap;
+    }
+
+    button{
+      font-family:'Orbitron', monospace;
+      font-weight:700;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      padding:10px 14px;
+      background: transparent;
+      color:var(--primary-cyan);
+      border:2px solid var(--primary-cyan);
+      border-radius:14px;
+      cursor:pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, color .2s ease;
+      box-shadow: 0 0 12px rgba(0,245,255,0.25);
+    }
+    button:hover{
+      transform: translateY(-2px);
+      border-color: var(--primary-pink);
+      color: var(--text);
+      box-shadow: 0 0 18px rgba(255,0,110,0.3);
+    }
+
+    .result{
+      margin-top:18px;
+      font-size:clamp(1.1rem, 3vw, 1.6rem);
+      line-height:1.35;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:4px 10px;
+      margin-left:8px;
+      border-radius:999px;
+      font-size:0.85em;
+      letter-spacing:0.04em;
+      text-transform:uppercase;
+      border:1px solid rgba(255,255,255,0.25);
+    }
+    .grade-a   { background:rgba(255,0,110,0.18);  border-color:rgba(255,0,110,0.45);  }
+    .grade-b   { background:rgba(255,165,0,0.18);  border-color:rgba(255,165,0,0.45);  }
+    .grade-c   { background:rgba(131,56,236,0.18); border-color:rgba(131,56,236,0.45); }
+    .grade-df  { background:rgba(0,245,255,0.12); border-color:rgba(0,245,255,0.45);  }
+
+    .details{
+      color:var(--text-dim);
+      margin-top:6px;
+      font-size:0.95rem;
+    }
+
+    .footer-note{
+      color:var(--text-dim);
+      margin-top:12px;
+      font-size:0.85rem;
+      opacity:0.9;
+    }
+
+    @media (max-width: 700px){
+      form{ grid-template-columns:1fr; }
+    }
   </style>
 </head>
-<body>
-  <h1>Student Final GPA Calculator</h1>
-  <form id="gradeForm">
-    <label>Student Name:
-      <input type="text" id="name" required>
-    </label>
-    <label>Test 1 (25%):
-      <input type="number" id="test1" min="0" max="100" required>
-    </label>
-    <label>Test 2 (30%):
-      <input type="number" id="test2" min="0" max="100" required>
-    </label>
-    <label>Project 1 (1%):
-      <input type="number" id="proj1" min="0" max="100" required>
-    </label>
-    <label>Project 2 (4%):
-      <input type="number" id="proj2" min="0" max="100" required>
-    </label>
-    <label>Project 3 (15%):
-      <input type="number" id="proj3" min="0" max="100" required>
-    </label>
-    <label>Assignment Score (25%):
-      <input type="number" id="assign" min="0" max="100" required>
-    </label>
-    <button type="button" onclick="calculateGrade()">Calculate Final GPA</button>
-  </form>
+<body class="grid">
+  <header>
+    <h2 class="title">Student Final GPA Calculator</h2>
+  </header>
 
-  <div class="result" id="result"></div>
+  <main>
+    <section class="card" aria-labelledby="page-title">
+      <h1 id="page-title">Enter Scores</h1>
 
-  <p>Noah Edited this!!!</p>
-  <p>George Edited this!!!</p>
+      <form id="gradeForm" onsubmit="event.preventDefault(); calculateGrade();">
+        <label class="row-full">Student Name:
+          <input type="text" id="name" placeholder="e.g., Taylor Jensen" required>
+        </label>
+
+        <label>Test 1 (25%):</label>
+        <input type="number" id="test1" min="0" max="100" placeholder="0–100" required>
+
+        <label>Test 2 (30%):</label>
+        <input type="number" id="test2" min="0" max="100" placeholder="0–100" required>
+
+        <label>Project 1 (1%):</label>
+        <input type="number" id="proj1" min="0" max="100" placeholder="0–100" required>
+
+        <label>Project 2 (4%):</label>
+        <input type="number" id="proj2" min="0" max="100" placeholder="0–100" required>
+
+        <label>Project 3 (15%):</label>
+        <input type="number" id="proj3" min="0" max="100" placeholder="0–100" required>
+
+        <label>Assignment Score (25%):</label>
+        <input type="number" id="assign" min="0" max="100" placeholder="0–100" required>
+
+        <div class="actions">
+          <button type="submit">Calculate Final GPA</button>
+          <button type="reset" onclick="resetResult()">Reset</button>
+        </div>
+      </form>
+
+      <div class="result" id="result">Your final grade will appear here.</div>
+      <div class="details" id="details"></div>
+
+      <p class="footer-note">Noah edited this.</p>
+      <p class="footer-note">George edited this.</p>
+    </section>
+  </main>
 
   <script>
     function calculateGrade() {
-      // Collect scores
       const name = document.getElementById('name').value.trim();
       const t1 = parseFloat(document.getElementById('test1').value) || 0;
       const t2 = parseFloat(document.getElementById('test2').value) || 0;
@@ -53,24 +262,33 @@
       const p2 = parseFloat(document.getElementById('proj2').value) || 0;
       const p3 = parseFloat(document.getElementById('proj3').value) || 0;
       const asg = parseFloat(document.getElementById('assign').value) || 0;
+    
 
-      // Weights
+      // Weighted final score
       const finalScore = (
-          t1 * 0.25 +
-          t2 * 0.30 +
-          p1 * 0.01 +
-          p2 * 0.04 +
-          p3 * 0.15 +
-          asg * 0.25
+        t1 * 0.25 +
+        t2 * 0.30 +
+        p1 * 0.01 +
+        p2 * 0.04 +
+        p3 * 0.15 +
+        asg * 0.25
       );
 
-      const rounded = Math.round(finalScore * 10) / 10; // round to 1 decimal
-
+      const rounded = Math.round(finalScore * 10) / 10; // 1 decimal
       const letter = getLetterGrade(rounded);
 
-      document.getElementById('result').textContent =
-        `${name ? name + "'s" : "Final"} final grade: ${rounded}% → ${letter}`;
-    }
+      const resultEl = document.getElementById('result');
+      const detailsEl = document.getElementById('details');
+
+      resultEl.innerHTML = `
+        <strong>${name ? name + "'s" : "Final"}</strong> final grade:
+        ${rounded}% <span class="badge ${classForLetter(letter)}">${letter}</span>
+      `;
+
+            detailsEl.textContent =
+        `Inputs → T1: ${t1}%, T2: ${t2}%, P1: ${p1}%, P2: ${p2}%, P3: ${p3}%, Assignments: ${asg}%`;
+}
+
 
     function getLetterGrade(score) {
       if (score >= 94) return "A";
@@ -86,6 +304,20 @@
       if (score >= 60) return "D-";
       return "F";
     }
+
+    function classForLetter(letter){
+      // Map A-range → pink, B-range → orange, C-range → purple, D/F → cyan
+      if (letter.startsWith('A')) return 'grade-a';
+      if (letter.startsWith('B')) return 'grade-b';
+      if (letter.startsWith('C')) return 'grade-c';
+      return 'grade-df';
+    }
+
+    function resetResult(){
+      document.getElementById('result').textContent = 'Your final grade will appear here.';
+      document.getElementById('details').textContent = '';
+    }
   </script>
 </body>
 </html>
+
