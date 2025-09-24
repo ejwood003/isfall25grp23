@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Calculator Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .form-section {
+            padding: 40px;
+        }
+
+        .student-name {
+            margin-bottom: 30px;
+        }
+
+        .student-name input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .student-name input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .grade-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .grade-item {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #4facfe;
+            transition: transform 0.3s ease;
+        }
+
+        .grade-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .grade-item label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .grade-details {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .grade-item input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .grade-item input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px;
+            font-size: 1.3em;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .results h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .final-score {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .letter-grade {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .breakdown {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .breakdown h3 {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .clear-btn {
+            background: #6c757d;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: #5a6268;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .form-section {
+                padding: 20px;
+            }
+            
+            .grade-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Grade Calculator Pro</h1>
+            <p>Professional Academic Performance Calculator</p>
+        </div>
+        
+        <div class="form-section">
+            <div class="student-name">
+                <label for="studentName">Student Name:</label>
+                <input type="text" id="studentName" placeholder="Enter student name..." />
+            </div>
+            
+            <div class="grade-grid">
+                <div class="grade-item">
+                    <label for="test1">Test 1</label>
+                    <div class="grade-details">100 points • 25% of final grade</div>
+                    <input type="number" id="test1" min="0" max="100" step="0.1" placeholder="Enter score (0-100)" />
+                </div>
+                
+                <div class="grade-item">
+                    <label for="test2">Test 2</label>
+                    <div class="grade-details">100 points • 30% of final grade</div>
+                    <input type="number" id="test2" min="0" max="100" step="0.1" placeholder="Enter score (0-100)" />
+                </div>
+                
+                <div class="grade-item">
+                    <label for="project1">Project 1</label>
+                    <div class="grade-details">100 points • 10% of final grade</div>
+                    <input type="number" id="project1" min="0" max="100" step="0.1" placeholder="Enter score (0-100)" />
+                </div>
+                
+                <div class="grade-item">
+                    <label for="project2">Project 2</label>
+                    <div class="grade-details">100 points • 4% of final grade</div>
+                    <input type="number" id="project2" min="0" max="100" step="0.1" placeholder="Enter score (0-100)" />
+                </div>
+                
+                <div class="grade-item">
+                    <label for="project3">Project 3</label>
+                    <div class="grade-details">100 points • 15% of final grade</div>
+                    <input type="number" id="project3" min="0" max="100" step="0.1" placeholder="Enter score (0-100)" />
+                </div>
+                
+                <div class="grade-item">
+                    <label for="assignment">Assignment Score</label>
+                    <div class="grade-details">100 points • 25% of final grade</div>
+                    <input type="number" id="assignment" min="0" max="100" step="0.1" placeholder="Enter score (0-100)" />
+                </div>
+            </div>
+            
+            <button class="calculate-btn" onclick="calculateGrade()">Calculate Final Grade</button>
+            <button class="clear-btn" onclick="clearForm()">Clear All</button>
+            
+            <div class="error" id="errorMsg"></div>
+            
+            <div class="results" id="results">
+                <h2 id="studentResult"></h2>
+                <div class="final-score" id="finalScore"></div>
+                <div class="letter-grade" id="letterGrade"></div>
+                <div class="breakdown" id="breakdown"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateGrade() {
+            // Get student name
+            const studentName = document.getElementById('studentName').value.trim();
+            
+            // Get all grade inputs
+            const test1 = parseFloat(document.getElementById('test1').value);
+            const test2 = parseFloat(document.getElementById('test2').value);
+            const project1 = parseFloat(document.getElementById('project1').value);
+            const project2 = parseFloat(document.getElementById('project2').value);
+            const project3 = parseFloat(document.getElementById('project3').value);
+            const assignment = parseFloat(document.getElementById('assignment').value);
+            
+            // Clear previous errors
+            document.getElementById('errorMsg').style.display = 'none';
+            
+            // Validation
+            const grades = [test1, test2, project1, project2, project3, assignment];
+            const gradeNames = ['Test 1', 'Test 2', 'Project 1', 'Project 2', 'Project 3', 'Assignment Score'];
+            
+            // Check if student name is provided
+            if (!studentName) {
+                showError('Please enter a student name.');
+                return;
+            }
+            
+            // Check for missing or invalid grades
+            for (let i = 0; i < grades.length; i++) {
+                if (isNaN(grades[i])) {
+                    showError(`Please enter a valid score for ${gradeNames[i]}.`);
+                    return;
+                }
+                if (grades[i] < 0 || grades[i] > 100) {
+                    showError(`${gradeNames[i]} must be between 0 and 100.`);
+                    return;
+                }
+            }
+            
+            // Calculate weighted final score
+            const weights = [0.25, 0.30, 0.10, 0.04, 0.15, 0.25]; // Updated Project 1 to 10%
+            let finalScore = 0;
+            
+            for (let i = 0; i < grades.length; i++) {
+                finalScore += grades[i] * weights[i];
+            }
+            
+            // Round to 2 decimal places
+            finalScore = Math.round(finalScore * 100) / 100;
+            
+            // Determine letter grade
+            const letterGrade = getLetterGrade(finalScore);
+            
+            // Display results
+            displayResults(studentName, finalScore, letterGrade, grades, gradeNames, weights);
+        }
+        
+        function getLetterGrade(score) {
+            if (score >= 94) return 'A';
+            else if (score >= 90) return 'A-';
+            else if (score >= 87) return 'B+';
+            else if (score >= 84) return 'B';
+            else if (score >= 80) return 'B-';
+            else if (score >= 77) return 'C+';
+            else if (score >= 74) return 'C';
+            else if (score >= 70) return 'C-';
+            else if (score >= 67) return 'D+';
+            else if (score >= 64) return 'D';
+            else if (score >= 60) return 'D-';
+            else return 'F';
+        }
+        
+        function displayResults(name, score, letter, grades, names, weights) {
+            document.getElementById('studentResult').textContent = `Results for ${name}`;
+            document.getElementById('finalScore').textContent = `${score}%`;
+            document.getElementById('letterGrade').textContent = `Letter Grade: ${letter}`;
+            
+            // Create breakdown
+            let breakdownHTML = '<h3>Grade Breakdown</h3>';
+            for (let i = 0; i < grades.length; i++) {
+                const contribution = Math.round(grades[i] * weights[i] * 100) / 100;
+                breakdownHTML += `
+                    <div class="breakdown-item">
+                        <span>${names[i]}: ${grades[i]}% (${(weights[i] * 100)}% weight)</span>
+                        <span>+${contribution} points</span>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('breakdown').innerHTML = breakdownHTML;
+            document.getElementById('results').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMsg');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+        }
+        
+        function clearForm() {
+            // Clear all inputs
+            document.getElementById('studentName').value = '';
+            document.getElementById('test1').value = '';
+            document.getElementById('test2').value = '';
+            document.getElementById('project1').value = '';
+            document.getElementById('project2').value = '';
+            document.getElementById('project3').value = '';
+            document.getElementById('assignment').value = '';
+            
+            // Hide results and errors
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('errorMsg').style.display = 'none';
+            
+            // Focus on student name
+            document.getElementById('studentName').focus();
+        }
+        
+        // Add Enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateGrade();
+            }
+        });
+        
+        // Auto-focus on student name when page loads
+        window.onload = function() {
+            document.getElementById('studentName').focus();
+        };
+        
+        // Test the calculator with sample data
+        function runTests() {
+            console.log('Running Grade Calculator Tests...');
+            
+            // Test Case 1: Perfect scores
+            console.log('Test 1: Perfect scores (all 100s)');
+            const perfectResult = testCalculation(100, 100, 100, 100, 100, 100);
+            console.log(`Expected: 100% (A), Got: ${perfectResult.score}% (${perfectResult.letter})`);
+            
+            // Test Case 2: Mixed scores
+            console.log('Test 2: Mixed scores');
+            const mixedResult = testCalculation(95, 88, 92, 85, 90, 87);
+            console.log(`Expected: ~89.7% (B+), Got: ${mixedResult.score}% (${mixedResult.letter})`);
+            
+            // Test Case 3: Lower scores
+            console.log('Test 3: Lower scores');
+            const lowResult = testCalculation(75, 70, 80, 85, 78, 72);
+            console.log(`Expected: ~74.65% (C), Got: ${lowResult.score}% (${lowResult.letter})`);
+            
+            // Test Case 4: Edge case - exactly 94%
+            console.log('Test 4: Edge case - exactly 94%');
+            const edgeResult = testCalculation(94, 94, 94, 94, 94, 94);
+            console.log(`Expected: 94% (A), Got: ${edgeResult.score}% (${edgeResult.letter})`);
+        }
+        
+        function testCalculation(t1, t2, p1, p2, p3, a) {
+            const weights = [0.25, 0.30, 0.10, 0.04, 0.15, 0.25];
+            const grades = [t1, t2, p1, p2, p3, a];
+            let score = 0;
+            
+            for (let i = 0; i < grades.length; i++) {
+                score += grades[i] * weights[i];
+            }
+            
+            score = Math.round(score * 100) / 100;
+            return { score: score, letter: getLetterGrade(score) };
+        }
+        
+        // Run tests when page loads (check console)
+        setTimeout(runTests, 1000);
+    </script>
+</body>
+</html>
